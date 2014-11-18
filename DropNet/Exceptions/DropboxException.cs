@@ -1,5 +1,5 @@
-﻿using System;
-using RestSharp;
+﻿using RestSharp.Portable;
+using System;
 using System.Net;
 
 namespace DropNet.Exceptions
@@ -22,10 +22,23 @@ namespace DropNet.Exceptions
 
         }
 
+        public DropboxException(IRestResponse response, Exception innerException) : 
+            base(response != null ? response.ToString() : "Uknown error", innerException)
+        {
+            if (response != null)
+            {
+                Response = response;
+                StatusCode = response.StatusCode;
+            }
+        }
+
         public DropboxException(IRestResponse r)
         {
-            Response = r;
-            StatusCode = r.StatusCode;
+            if (r != null)
+            {
+                Response = r;
+                StatusCode = r.StatusCode;
+            }
         }
 
     }

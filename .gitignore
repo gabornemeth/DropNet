@@ -35,4 +35,5 @@ download/
 .DS_Store
 *.pidb
 *.userprefs
-/DropNet.Tests/TestVariables.cs
+packages/
+app.config

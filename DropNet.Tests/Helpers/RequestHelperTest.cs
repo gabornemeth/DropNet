@@ -1,13 +1,14 @@
 ﻿using DropNet.Helpers;
+using DropNet.Tests.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using RestSharp;
 using Ploeh.AutoFixture;
+using RestSharp.Portable;
+using System;
+using System.Linq;
+using System.Net.Http;
 
 namespace DropNet.Tests
 {
-    
-    
     /// <summary>
     ///This is a test class for RequestHelperTest and is intended
     ///to contain all RequestHelperTest Unit Tests
@@ -95,7 +96,7 @@ namespace DropNet.Tests
             RestRequest actual = _target.CreateAccountInfoRequest();
 
             Assert.IsNotNull(actual);
-            Assert.IsTrue(actual.Method == Method.GET);
+            Assert.IsTrue(actual.Method == HttpMethod.Get);
             Assert.IsNotNull(actual.Resource);
             Assert.IsNotNull(actual.Parameters);
             Assert.IsTrue(actual.Parameters.Count == 1);
@@ -115,7 +116,7 @@ namespace DropNet.Tests
             RestRequest actual = _target.CreateCopyFileRequest(fromPath, toPath, "dropbox");
 
             Assert.IsNotNull(actual);
-            Assert.IsTrue(actual.Method == Method.GET);
+            Assert.IsTrue(actual.Method == HttpMethod.Get);
             Assert.IsNotNull(actual.Resource);
             Assert.IsNotNull(actual.Parameters);
             Assert.IsTrue(actual.Parameters.Count == 4);
@@ -123,10 +124,10 @@ namespace DropNet.Tests
             Assert.IsTrue(actual.Parameters.Exists(x => x.Name == "from_path"));
             Assert.IsTrue(actual.Parameters.Exists(x => x.Name == "to_path"));
             Assert.IsTrue(actual.Parameters.Exists(x => x.Name == "root"));
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "version").Value, _version));
-            Assert.IsTrue(actual.Parameters.Find(x => x.Name == "version").Type == ParameterType.UrlSegment);
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "from_path").Value, fromPath));
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "to_path").Value, toPath));
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "version").Value, _version));
+            Assert.IsTrue(actual.Parameters.First(x => x.Name == "version").Type == ParameterType.UrlSegment);
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "from_path").Value, fromPath));
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "to_path").Value, toPath));
         }
 
         /// <summary>
@@ -139,13 +140,13 @@ namespace DropNet.Tests
             RestRequest actual = _target.CreateDeleteFileRequest(path, "dropbox");
 
             Assert.IsNotNull(actual);
-            Assert.IsTrue(actual.Method == Method.GET);
+            Assert.IsTrue(actual.Method == HttpMethod.Get);
             Assert.IsNotNull(actual.Resource);
             Assert.IsNotNull(actual.Parameters);
             Assert.IsTrue(actual.Parameters.Count == 3);
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "version").Value, _version));
-            Assert.IsTrue(actual.Parameters.Find(x => x.Name == "version").Type == ParameterType.UrlSegment);
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "path").Value, path));
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "version").Value, _version));
+            Assert.IsTrue(actual.Parameters.First(x => x.Name == "version").Type == ParameterType.UrlSegment);
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "path").Value, path));
         }
 
         /// <summary>
@@ -158,14 +159,14 @@ namespace DropNet.Tests
             RestRequest actual = _target.CreateGetFileRequest(path, "dropbox");
 
             Assert.IsNotNull(actual);
-            Assert.IsTrue(actual.Method == Method.GET);
+            Assert.IsTrue(actual.Method == HttpMethod.Get);
             Assert.IsNotNull(actual.Resource);
             Assert.IsNotNull(actual.Parameters);
             Assert.IsTrue(actual.Parameters.Count == 3);
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "version").Value, _version));
-            Assert.IsTrue(actual.Parameters.Find(x => x.Name == "version").Type == ParameterType.UrlSegment);
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "path").Value, path));
-            Assert.IsTrue(actual.Parameters.Find(x => x.Name == "path").Type == ParameterType.UrlSegment);
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "version").Value, _version));
+            Assert.IsTrue(actual.Parameters.First(x => x.Name == "version").Type == ParameterType.UrlSegment);
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "path").Value, path));
+            Assert.IsTrue(actual.Parameters.First(x => x.Name == "path").Type == ParameterType.UrlSegment);
         }
 
         /// <summary>
@@ -180,15 +181,15 @@ namespace DropNet.Tests
             RestRequest actual = _target.CreateLoginRequest(apiKey, email, password);
 
             Assert.IsNotNull(actual);
-            Assert.IsTrue(actual.Method == Method.GET);
+            Assert.IsTrue(actual.Method == HttpMethod.Get);
             Assert.IsNotNull(actual.Resource);
             Assert.IsNotNull(actual.Parameters);
             Assert.IsTrue(actual.Parameters.Count == 4);
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "version").Value, _version));
-            Assert.IsTrue(actual.Parameters.Find(x => x.Name == "version").Type == ParameterType.UrlSegment);
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "oauth_consumer_key").Value, apiKey));
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "email").Value, email));
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "password").Value, password));
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "version").Value, _version));
+            Assert.IsTrue(actual.Parameters.First(x => x.Name == "version").Type == ParameterType.UrlSegment);
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "oauth_consumer_key").Value, apiKey));
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "email").Value, email));
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "password").Value, password));
         }
 
         /// <summary>
@@ -201,14 +202,16 @@ namespace DropNet.Tests
             RestRequest actual = _target.CreateMetadataRequest(path, "dropbox");
 
             Assert.IsNotNull(actual);
-            Assert.IsTrue(actual.Method == Method.GET);
+            Assert.IsTrue(actual.Method == HttpMethod.Get);
             Assert.IsNotNull(actual.Resource);
             Assert.IsNotNull(actual.Parameters);
-            Assert.IsTrue(actual.Parameters.Count == 2);
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "version").Value, _version));
-            Assert.IsTrue(actual.Parameters.Find(x => x.Name == "version").Type == ParameterType.UrlSegment);
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "path").Value, path));
-            Assert.IsTrue(actual.Parameters.Find(x => x.Name == "path").Type == ParameterType.UrlSegment);
+            Assert.IsTrue(actual.Parameters.Count == 3);
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "version").Value, _version));
+            Assert.IsTrue(actual.Parameters.First(x => x.Name == "version").Type == ParameterType.UrlSegment);
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "path").Value, path));
+            Assert.IsTrue(actual.Parameters.First(x => x.Name == "path").Type == ParameterType.UrlSegment);
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "root").Value, "dropbox"));
+            Assert.IsTrue(actual.Parameters.First(x => x.Name == "root").Type == ParameterType.UrlSegment);
         }
 
         /// <summary>
@@ -222,7 +225,7 @@ namespace DropNet.Tests
             RestRequest actual = _target.CreateMoveFileRequest(fromPath, toPath, "dropbox");
 
             Assert.IsNotNull(actual);
-            Assert.IsTrue(actual.Method == Method.GET);
+            Assert.IsTrue(actual.Method == HttpMethod.Get);
             Assert.IsNotNull(actual.Resource);
             Assert.IsNotNull(actual.Parameters);
             Assert.IsTrue(actual.Parameters.Count == 4);
@@ -230,10 +233,10 @@ namespace DropNet.Tests
             Assert.IsTrue(actual.Parameters.Exists(x => x.Name == "from_path"));
             Assert.IsTrue(actual.Parameters.Exists(x => x.Name == "to_path"));
             Assert.IsTrue(actual.Parameters.Exists(x => x.Name == "root"));
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "version").Value, _version));
-            Assert.IsTrue(actual.Parameters.Find(x => x.Name == "version").Type == ParameterType.UrlSegment);
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "from_path").Value, fromPath));
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "to_path").Value, toPath));
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "version").Value, _version));
+            Assert.IsTrue(actual.Parameters.First(x => x.Name == "version").Type == ParameterType.UrlSegment);
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "from_path").Value, fromPath));
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "to_path").Value, toPath));
         }
 
         /// <summary>
@@ -249,16 +252,17 @@ namespace DropNet.Tests
             RestRequest actual = _target.CreateUploadFileRequest(path, filename, fileData, "dropbox", true, null);
 
             Assert.IsNotNull(actual);
-            Assert.IsTrue(actual.Method == Method.POST);
+            Assert.IsTrue(actual.Method == HttpMethod.Post);
             Assert.IsNotNull(actual.Resource);
             Assert.IsNotNull(actual.Parameters);
-            Assert.IsTrue(actual.Parameters.Count == 4);
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "version").Value, _version));
-            Assert.IsTrue(actual.Parameters.Find(x => x.Name == "version").Type == ParameterType.UrlSegment);
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "path").Value, path));
-            Assert.IsTrue(actual.Parameters.Find(x => x.Name == "path").Type == ParameterType.UrlSegment);
-            Assert.IsTrue(String.Equals(actual.Parameters.Find(x => x.Name == "file").Value, filename));
-            Assert.IsTrue(actual.Files.Count == 1);
+            Assert.IsTrue(actual.Parameters.Count == 5);
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "version").Value, _version));
+            Assert.IsTrue(actual.Parameters.First(x => x.Name == "version").Type == ParameterType.UrlSegment);
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "path").Value, path));
+            Assert.IsTrue(actual.Parameters.First(x => x.Name == "path").Type == ParameterType.UrlSegment);
+            Assert.IsTrue(String.Equals(actual.Parameters.First(x => x.Name == "file").Value, fileData));
+            //Assert.IsTrue(actual.Files.Count == 1);
+            // TODO: check file parameter (this is the 5th)
         }
     }
 }

@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>c766b366-a0bd-4b6b-bf06-bfef07235356</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>DropNet.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Authenticators\OAuth2Authenticator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Authenticators\OAuthAuthenticator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Client\Client.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Client\Files.Async.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Client\Files.Sync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Client\Files.Task.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Client\User.Async.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Client\User.Sync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\DropboxException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\RestClientExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ChunkedUploadHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\RequestHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AccountInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ChunkedUpload.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ChunkedUploadProgress.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CopyRefResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DeltaPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\MetaData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\OAuth2AccessToken.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SharesResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ThumbnailSize.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserLogin.cs" />
+  </ItemGroup>
+</Project>

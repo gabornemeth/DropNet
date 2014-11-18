@@ -1,6 +1,7 @@
-﻿using System;
-using DropNet.Exceptions;
+﻿using DropNet.Exceptions;
 using DropNet.Models;
+using System;
+using System.Threading.Tasks;
 
 namespace DropNet.Helpers
 {
@@ -10,8 +11,6 @@ namespace DropNet.Helpers
         private readonly DropNetClient _client;
         private readonly Func<long, byte[]> _chunkNeeded;
         private readonly string _path;
-        private readonly Action<MetaData> _success;
-        private readonly Action<DropboxException> _failure;
         private readonly Action<ChunkedUploadProgress> _progress;
         private readonly bool _overwrite;
         private readonly string _parentRevision;
@@ -21,7 +20,7 @@ namespace DropNet.Helpers
         private long _chunksFailed;
         private ChunkedUpload _lastChunkUploaded;
 
-        public ChunkedUploadHelper(DropNetClient client, Func<long, byte[]> chunkNeeded, string path, Action<MetaData> success, Action<DropboxException> failure, Action<ChunkedUploadProgress> progress, bool overwrite, string parentRevision, long? fileSize, long? maxRetries)
+        public ChunkedUploadHelper(DropNetClient client, Func<long, byte[]> chunkNeeded, string path, Action<ChunkedUploadProgress> progress, bool overwrite, string parentRevision, long? fileSize, long? maxRetries)
         {
             if (client == null)
             {
@@ -33,39 +32,29 @@ namespace DropNet.Helpers
                 throw new ArgumentNullException("chunkNeeded");
             }
 
-            if (success == null)
-            {
-                throw new ArgumentNullException("success");
-            }
-
-            if (failure == null)
-            {
-                throw new ArgumentNullException("failure");
-            }
-
             _client = client;
             _chunkNeeded = chunkNeeded;
             _path = path;
-            _success = success;
-            _failure = failure;
             _progress = progress;
             _overwrite = overwrite;
             _parentRevision = parentRevision;
             _fileSize = fileSize;
             _maxRetries = maxRetries;
+            _lastChunkUploaded = new ChunkedUpload(); // initial chunk
         }
 
-        public void Start()
+        async public Task<MetaData> StartAsync()
         {
             var firstChunk = _chunkNeeded.Invoke(0);
             var chunkLength = firstChunk.GetLength(0);
             if (chunkLength <= 0)
             {
-                _failure.Invoke(new DropboxException("Aborting chunked upload because chunkNeeded function returned no data on first call."));
+                throw new DropboxException("Aborting chunked upload because chunkNeeded function returned no data on first call.");
             }
 
             UpdateProgress(0, null);
-            _client.StartChunkedUploadAsync(firstChunk, OnChunkSuccess, OnChunkedUploadFailure );
+            var chunk = await _client.ChunkedUploadAsync(_lastChunkUploaded, firstChunk);
+            return await OnChunkSuccess(chunk);
         }
 
         private void UpdateProgress(long offset, string uploadId)
@@ -76,7 +65,7 @@ namespace DropNet.Helpers
             }
         }
 
-        private void OnChunkSuccess(ChunkedUpload chunkedUpload)
+        async private Task<MetaData> OnChunkSuccess(ChunkedUpload chunkedUpload)
         {
             _chunksCompleted++;
             _lastChunkUploaded = chunkedUpload;
@@ -89,25 +78,11 @@ namespace DropNet.Helpers
             var chunkLength = nextChunk.GetLength(0);
             if (chunkLength > 0)
             {
-                _client.AppendChunkedUploadAsync(chunkedUpload, nextChunk, OnChunkSuccess, OnChunkedUploadFailure);
+                var chunk = await _client.ChunkedUploadAsync(chunkedUpload, nextChunk);
+                await OnChunkSuccess(chunk);
             }
-            else
-            {
-                _client.CommitChunkedUploadAsync(chunkedUpload, _path, _success, _failure, _overwrite, _parentRevision);
-            }
-        }
 
-        private void OnChunkedUploadFailure(DropboxException dropboxException)
-        {
-            _chunksFailed++;
-            if (_lastChunkUploaded != null && _chunksFailed <= _maxRetries.GetValueOrDefault(DefaultMaxRetries))
-            {
-                OnChunkSuccess(_lastChunkUploaded);
-            }
-            else
-            {
-                _failure.Invoke(dropboxException);
-            }
+            return await _client.CommitChunkedUploadAsync(chunkedUpload, _path, _overwrite, _parentRevision);
         }
     }
 }

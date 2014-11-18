@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 
 namespace DropNet.Extensions
@@ -23,5 +24,31 @@ namespace DropNet.Extensions
             }
             return builder.ToString();
         }
+
+        public static string AppendDirectory(this string directory, string subDirectory)
+        {
+            if (directory.EndsWith("/"))
+                return directory + subDirectory;
+
+            return directory + "/" + subDirectory;
+        }
+
+        public static string RemoveLastDirectory(this string directory)
+        {
+            var index = directory.LastIndexOf('/');
+            if (index <= 0)
+                return "/";
+            return directory.Substring(0, index);
+        }
+
+        public static string GetRandomString(int length)
+        {
+            var sb = new StringBuilder(length);
+            var rnd = new Random(Environment.TickCount);
+            for (int i = 0; i < length; i++)
+                sb.Append((char)rnd.Next(char.MaxValue));
+            return sb.ToString();
+        }
+
     }
 }
