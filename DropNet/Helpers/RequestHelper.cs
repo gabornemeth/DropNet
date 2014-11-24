@@ -72,10 +72,10 @@ namespace DropNet.Helpers
 
         public RestRequest CreateGetFileRequest(string path, string root)
         {
-            var request = new RestRequest("{version}/files/{root}{path}", HttpMethod.Get);
+            var request = new RestRequest("{version}/files/auto{path}", HttpMethod.Get);
             request.AddParameter("version", _version, ParameterType.UrlSegment);
             request.AddParameter("path", path, ParameterType.UrlSegment);
-            request.AddParameter("root", root, ParameterType.UrlSegment);
+            //request.AddParameter("root", root, ParameterType.UrlSegment);
 
             return request;
         }

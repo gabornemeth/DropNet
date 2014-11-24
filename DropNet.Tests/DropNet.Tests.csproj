@@ -98,6 +98,7 @@
   <ItemGroup>
     <Compile Include="Extensions\DropNetExtensions.cs" />
     <Compile Include="Extensions\IListExtensions.cs" />
+    <Compile Include="FileTests.Get.cs" />
     <Compile Include="FileTests.Task.cs" />
     <Content Include="TestData\Video.mp4">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

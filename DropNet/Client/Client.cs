@@ -70,14 +70,17 @@ namespace DropNet
             _restClient.Proxy = _proxy;
 
             _restClient.ClearHandlers();
+            _restClient.Authenticator = authenticator;
             _restClient.AddHandler("*", new JsonDeserializer());
 
             _restClientContent = new RestClient(DropboxClient.ApiContentBaseUrl);
+            _restClientContent.Authenticator = authenticator;
             _restClientContent.Proxy = _proxy;
             _restClientContent.ClearHandlers();
             _restClientContent.AddHandler("*", new JsonDeserializer());
 
             _restClientNotify = new RestClient(DropboxClient.ApiNotifyUrl);
+            _restClientNotify.Authenticator = authenticator;
             _restClientNotify.Proxy = _proxy;
             _restClientNotify.ClearHandlers();
             _restClientNotify.AddHandler("*", new JsonDeserializer());
@@ -90,7 +93,7 @@ namespace DropNet
             IRestResponse response = null;
             if (apiType == ApiType.Base)
             {
-                await Authenticate(_restClient, request);
+                //await Authenticate(_restClient, request);
                 response = await _restClient.Execute(request);
 
                 if (response.StatusCode != HttpStatusCode.OK)
@@ -100,7 +103,7 @@ namespace DropNet
             }
             else if (apiType == ApiType.Content)
             {
-                await Authenticate(_restClientContent, request);
+                //await Authenticate(_restClientContent, request);
                 response = await _restClientContent.Execute(request);
 
                 if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.PartialContent)
@@ -110,7 +113,7 @@ namespace DropNet
             }
             else
             {
-                await Authenticate(_restClientNotify, request);
+                //await Authenticate(_restClientNotify, request);
                 response = await _restClientNotify.Execute(request);
 
                 if (response.StatusCode != HttpStatusCode.OK)
@@ -128,7 +131,7 @@ namespace DropNet
             IRestResponse<T> response = null;
             if (apiType == ApiType.Base)
             {
-                await Authenticate(_restClient, request);
+                //await Authenticate(_restClient, request);
                 response = await _restClient.Execute<T>(request);
 
                 if (response.StatusCode != HttpStatusCode.OK)
@@ -140,7 +143,7 @@ namespace DropNet
             {
                 try
                 {
-                    await Authenticate(_restClientContent, request);
+                    //await Authenticate(_restClientContent, request);
                     response = await _restClientContent.Execute<T>(request);
 
                     if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.PartialContent)
@@ -155,7 +158,7 @@ namespace DropNet
             }
             else
             {
-                await Authenticate(_restClientNotify, request);
+                //await Authenticate(_restClientNotify, request);
                 response = await _restClientNotify.Execute<T>(request);
 
                 if (response.StatusCode != HttpStatusCode.OK)
@@ -167,16 +170,16 @@ namespace DropNet
             return response != null ? response.Data : null;
         }
 
-        async private Task Authenticate(IRestClient client, IRestRequest request)
-        {
-            // workaround: AsyncAuthenticator causes deadlock when calls Wait on UI Context
-            // If ConfigureAwait(false) is used, then Dropbox login page cannot be displayed because it does not run in UI syncronization context
-            AsyncAuthenticator asyncAuthenticator = authenticator as AsyncAuthenticator;
-            if (asyncAuthenticator != null)
-                await asyncAuthenticator.Authenticate(_restClient, request);
-            else
-                authenticator.Authenticate(_restClient, request);
-        }
+        //async private Task Authenticate(IRestClient client, IRestRequest request)
+        //{
+        //    // workaround: AsyncAuthenticator causes deadlock when calls Wait on UI Context
+        //    // If ConfigureAwait(false) is used, then Dropbox login page cannot be displayed because it does not run in UI syncronization context
+        //    AsyncAuthenticator asyncAuthenticator = authenticator as AsyncAuthenticator;
+        //    if (asyncAuthenticator != null)
+        //        await asyncAuthenticator.Authenticate(_restClient, request);
+        //    else
+        //        authenticator.Authenticate(_restClient, request);
+        //}
 
         enum ApiType
         {
